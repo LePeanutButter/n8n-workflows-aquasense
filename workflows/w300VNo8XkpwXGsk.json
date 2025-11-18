@@ -1,0 +1,428 @@
+{
+  "active": false,
+  "connections": {
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch SCADA Data": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch SCADA Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert rows in a table": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Insert rows in a table",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "HTML",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send email": {
+      "main": [
+        []
+      ]
+    },
+    "HTML": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-11-17T21:08:28.002Z",
+  "id": "w300VNo8XkpwXGsk",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "SCADA Sim Subworkflow",
+  "nodes": [
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $('Code in JavaScript').item }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        336,
+        -240
+      ],
+      "id": "fa1c0e36-f202-4a2d-8f79-0914e520f3c5",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        224,
+        -256
+      ],
+      "id": "7b7836bf-1ba3-4975-aee5-14cc3c8db1db",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "l4VavEq77Owh5zeJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=> *Eres un Analista Industrial Senior especializado en monitoreo IoT, diagnóstico predictivo y análisis de series temporales para sistemas hidráulicos y de presión. Tu responsabilidad es detectar condiciones anormales que puedan indicar fugas, fallas críticas o comportamientos peligrosos en dispositivos industriales. Estás manejando un caso de urgencia operativa y tu respuesta debe ser precisa, técnica y accionable.*\n\n\nQuiero que analices los siguientes datos provenientes de sensores industriales. La situación es de carácter urgente y se requiere un diagnóstico inmediato.\n\nLos datos incluyen:\n\n* Valores del sensor\n* Fecha/Hora de lectura\n* Límites mínimos y máximos permitidos\n* Distancia a los límites (above_max / below_min)\n* Delta de variación\n* Media móvil y desviación estándar\n* Z-score\n* Información del dispositivo y del tag asociado\n\nAquí están los datos (en formato JSON):\n\n{{ JSON.stringify($json) }}\n\n### **Criterios para considerar posible falla o fuga (will_fail = true):**\n\n* Tendencia descendente constante en presión o nivel.\n* Caídas abruptas (delta_value negativo pronunciado).\n* Z-score menor a -2 o mayor a +2 indicando comportamiento anormal.\n* Valores repetidamente fuera de rango o muy cercanos al mínimo/máximo permitido.\n* Variabilidad anormal detectada en la media móvil de 1 hora (std_1h elevada).\n* Evidencia correlacionada con alarmas o eventos recientes.\n\n### **Criterios para marcar como normal (will_fail = false):**\n\n* Variación dentro de tolerancias operativas normales.\n* Oscilaciones esperadas del sistema.\n* Cambios explicables por operaciones registradas (ej. comandos previos).\n\n**Responde únicamente con un array de objetos JSON**, sin texto adicional, con el siguiente formato:\n\n```php\nResponde ÚNICAMENTE con un array JSON válido. \nNo incluyas texto antes ni después.\nNo agregues claves como \"output\", \"result\" o similares.\n\nEl formato exacto es:\n\n[\n  {\n    \"device_id\": <number>,\n    \"will_fail\": <true|false>,\n    \"description\": \"<texto>\"\n  }\n]\n```",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        304,
+        -416
+      ],
+      "id": "9438ab63-81df-48b5-bc80-6f241b4c128b",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "WITH\n\n-- =============================\n-- 1) OPERACIÓN DIARIA (24h)\n-- =============================\ndaily AS (\n    SELECT\n        'daily' AS dataset_type,\n\n        d.device_id,\n        d.device_name,\n        d.device_type,\n        d.location,\n\n        t.tag_id,\n        t.tag_name,\n        t.tag_type,\n        t.units,\n        t.min_value,\n        t.max_value,\n\n        tv.value_id,\n        tv.timestamp AS reading_time,\n        tv.value,\n        tv.quality,\n\n        (tv.value - t.max_value) AS above_max,\n        (t.min_value - tv.value) AS below_min,\n\n        -- Columnas del histórico dejadas en NULL\n        NULL::numeric AS delta_value,\n        NULL::numeric AS moving_avg_1h,\n        NULL::numeric AS std_1h,\n        NULL::numeric AS z_score\n\n    FROM TagValues tv\n    JOIN Tags t ON tv.tag_id = t.tag_id\n    JOIN Devices d ON t.device_id = d.device_id\n\n    WHERE tv.timestamp >= (CURRENT_DATE - INTERVAL '1 day')\n      AND tv.timestamp < CURRENT_DATE\n),\n\n-- =============================\n-- 2) HISTÓRICO (30 días)\n-- =============================\nhistory AS (\n    SELECT\n        'history' AS dataset_type,\n\n        d.device_id,\n        d.device_name,\n        d.device_type,\n        d.location,\n\n        t.tag_id,\n        t.tag_name,\n        t.tag_type,\n        t.units,\n        t.min_value,\n        t.max_value,\n\n        tv.value_id,\n        tv.timestamp AS reading_time,\n        tv.value,\n        tv.quality,\n\n        (tv.value - t.max_value) AS above_max,\n        (t.min_value - tv.value) AS below_min,\n\n        -- Velocidad de cambio Δvalue\n        tv.value - LAG(tv.value) OVER (\n            PARTITION BY tv.tag_id ORDER BY tv.timestamp\n        ) AS delta_value,\n\n        -- Promedio móvil 1h\n        AVG(tv.value) OVER (\n            PARTITION BY tv.tag_id\n            ORDER BY tv.timestamp\n            RANGE BETWEEN INTERVAL '1 hour' PRECEDING AND CURRENT ROW\n        ) AS moving_avg_1h,\n\n        -- Desviación móvil\n        STDDEV_POP(tv.value) OVER (\n            PARTITION BY tv.tag_id\n            ORDER BY tv.timestamp\n            RANGE BETWEEN INTERVAL '1 hour' PRECEDING AND CURRENT ROW\n        ) AS std_1h,\n\n        -- Z-score\n        CASE\n            WHEN STDDEV_POP(tv.value) OVER (\n                PARTITION BY tv.tag_id\n                ORDER BY tv.timestamp\n                RANGE BETWEEN INTERVAL '1 hour' PRECEDING AND CURRENT ROW\n            ) > 0\n            THEN (\n                tv.value -\n                AVG(tv.value) OVER (\n                    PARTITION BY tv.tag_id\n                    ORDER BY tv.timestamp\n                    RANGE BETWEEN INTERVAL '1 hour' PRECEDING AND CURRENT ROW\n                )\n            ) /\n            STDDEV_POP(tv.value) OVER (\n                PARTITION BY tv.tag_id\n                ORDER BY tv.timestamp\n                RANGE BETWEEN INTERVAL '1 hour' PRECEDING AND CURRENT ROW\n            )\n            ELSE 0\n        END AS z_score\n\n    FROM TagValues tv\n    JOIN Tags t ON tv.tag_id = t.tag_id\n    JOIN Devices d ON t.device_id = d.device_id\n\n    WHERE tv.timestamp >= (CURRENT_DATE - INTERVAL '30 days')\n)\n\n-- =============================\n-- RESULTADO\n-- =============================\nSELECT * FROM daily\nUNION ALL\nSELECT * FROM history\nORDER BY reading_time;\n",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        -128,
+        -416
+      ],
+      "id": "b5977f22-9f1d-4811-b60f-733ddfa219c8",
+      "name": "Fetch SCADA Data",
+      "credentials": {
+        "postgres": {
+          "id": "gyXDt2PS3zJ6Ccuo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"device_id\": { \"type\": \"number\" },\n      \"will_fail\": { \"type\": \"boolean\" },\n      \"description\": { \"type\": \"string\" }\n    },\n    \"required\": [\"device_id\", \"will_fail\", \"description\"],\n    \"additionalProperties\": false\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        464,
+        -240
+      ],
+      "id": "35ca90af-42f3-405b-9995-bd0c2d2473cf",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {}
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        -416
+      ],
+      "id": "fce25b71-80dc-497e-b308-2ca5a3ad0951",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "jsCode": "function formatJSON(arr) {\n  return JSON.stringify(arr, null, 2)\n    .replace(/\\\\\"/g, '\"');  \n}\n\nconst unified = formatJSON(\n  $input.all().map(item => item.json)\n);\n\nreturn [\n  { json: { unified } }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        112,
+        -416
+      ],
+      "id": "78e9b903-d65a-4c13-825e-26938364e94f",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nlet failingDevices = [];\n\nfor (const item of items) {\n    const data = item.json;\n\n    if (data.will_fail === true) {\n        failingDevices.push({\n            device_id: data.device_id,\n            will_fail: data.will_fail,\n            description: data.description\n        });\n    }\n}\n\nreturn failingDevices.map(d => ({ json: d }));\n\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        960,
+        -416
+      ],
+      "id": "104ddacf-2423-4f90-864f-862c75aaa68a",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "schema": {
+          "__rl": true,
+          "mode": "list",
+          "value": "public"
+        },
+        "table": {
+          "__rl": true,
+          "value": "failure_logs",
+          "mode": "list",
+          "cachedResultName": "failure_logs"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "will_fail": "={{ $json.will_fail }}",
+            "created_at": "={{ new Date().toISOString() }}",
+            "device_id": "={{ $json.device_id }}",
+            "description": "={{ $json.description }}"
+          },
+          "matchingColumns": [
+            "id"
+          ],
+          "schema": [
+            {
+              "id": "id",
+              "displayName": "id",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true,
+              "removed": true
+            },
+            {
+              "id": "created_at",
+              "displayName": "created_at",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "dateTime",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "device_id",
+              "displayName": "device_id",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "number",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "will_fail",
+              "displayName": "will_fail",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "boolean",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "description",
+              "displayName": "description",
+              "required": true,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.6,
+      "position": [
+        768,
+        -416
+      ],
+      "id": "d51ac115-a8dd-4c4f-932b-2c87f87add8a",
+      "name": "Insert rows in a table",
+      "credentials": {
+        "postgres": {
+          "id": "gyXDt2PS3zJ6Ccuo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "output",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        592,
+        -416
+      ],
+      "id": "2292636f-07c6-49c9-bfb3-9153338b663a",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "html": "<html>\n  <body style=\"font-family: Arial, Helvetica, sans-serif; background-color:#f4f8fb; padding: 20px; color:#003049;\">\n\n    <div style=\"max-width: 700px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #dce6ee;\">\n\n      <h2 style=\"color:#005f99; margin-bottom: 10px; font-weight: 600;\">\n        Reporte de Dispositivos con Fallas\n      </h2>\n\n      <p style=\"font-size: 15px; color:#003049; line-height: 1.5;\">\n        Se ha detectado actividad anómala en los siguientes dispositivos. Este informe ha sido generado de forma automática por el sistema de monitoreo.\n      </p>\n\n      <div style=\"margin-top: 25px;\">\n        {{\n          $input.all().map(item => `\n            <div style=\"\n              border-left: 4px solid #4bb3fd;\n              padding: 12px 15px;\n              margin-bottom: 15px;\n              background: #f0f7fc;\n              border-radius: 6px;\n            \">\n              <strong style=\"font-size: 15px; color:#003049;\">\n                Dispositivo ID: ${item.json.device_id}\n              </strong>\n              <p style=\"margin: 6px 0 0 0; font-size: 14px; color:#003049;\">\n                ${item.json.description}\n              </p>\n            </div>\n          `).join(\"\")\n        }}\n      </div>\n\n      <p style=\"margin-top: 30px; font-size: 13px; color:#6c7a86; text-align: center;\">\n        Este es un aviso automático generado por el sistema de supervisión de infraestructura.  \n      </p>\n\n    </div>\n\n  </body>\n</html>\n"
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        1120,
+        -416
+      ],
+      "id": "1110ebae-aeef-4e60-ade7-c003b94e4f15",
+      "name": "HTML"
+    },
+    {
+      "parameters": {
+        "fromEmail": "andresfelipecalderonramirez@gmail.com",
+        "toEmail": "andres.calderon-r@mail.escuelaing.edu.co, santiago.botero-g@mail.escuelaing.edu.co, ricardo.ayala-g@mail.escuelaing.edu.co, santiago.amaya-z@mail.escuelaing.edu.co, laura.perilla-q@mail.escuelaing.edu.co",
+        "subject": "Advertencia: Condiciones Irregulares en Equipos Hídricos",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        1312,
+        -416
+      ],
+      "id": "107d128e-2ab2-4b3f-bb6b-ff64e55475a9",
+      "name": "Send email",
+      "webhookId": "8a23800f-cc5d-42c2-9562-3326e83af9e6",
+      "credentials": {
+        "smtp": {
+          "id": "bJprEK5yBNisfuTh",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-11-17T21:08:28.022Z",
+      "createdAt": "2025-11-17T21:08:28.022Z",
+      "role": "workflow:owner",
+      "workflowId": "w300VNo8XkpwXGsk",
+      "projectId": "xno20arzPonor2IK"
+    }
+  ],
+  "staticData": null,
+  "tags": [],
+  "triggerCount": 0,
+  "updatedAt": "2025-11-18T03:33:33.000Z",
+  "versionId": "144df3b1-f941-490e-b098-106ae677f4a4"
+}
