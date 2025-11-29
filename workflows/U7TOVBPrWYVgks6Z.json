@@ -1,0 +1,462 @@
+{
+  "active": false,
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Execute a SQL query",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute a SQL query": {
+      "main": [
+        [
+          {
+            "node": "If Alert Level Is Not Low",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Fetch CRM Data": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Fetch CRM Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Format Data for AI",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Generate HTML Report": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Format Data for AI": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Alert Level Is Not Low": {
+      "main": [
+        [
+          {
+            "node": "Generate HTML Report",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2025-11-27T20:55:09.390Z",
+  "id": "U7TOVBPrWYVgks6Z",
+  "isArchived": false,
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "name": "CRM Data Integration Subworkflow",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "b97348da-99a4-4b85-9d6e-3d0e4bcdba20",
+      "name": "Google Gemini Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        960
+      ],
+      "credentials": {
+        "googlePalmApi": {
+          "id": "l4VavEq77Owh5zeJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "agent": "conversationalAgent",
+        "promptType": "define",
+        "text": "=**Rol asignado al modelo:**\n*Eres un analista de datos experto en CRM y gestión de reclamos, especializado en detectar patrones, anomalías y riesgos operativos. Tu objetivo es producir un análisis claro, conciso y profesional basado en los datos proporcionados.*\n\n**Instrucciones:**\n\nAnaliza los siguientes datos de reclamos del CRM. Los datos ya han sido procesados y contienen información como `cliente_id`, `tipo_reclamo`, `fecha_reclamo`, `ciudad`, `prioridad`, entre otros:\n\n{{ JSON.stringify($json) }}\n\nTu análisis debe identificar y describir en texto:\n\n1. Reclamos duplicados o muy similares\n2. Patrones geográficos o temporales de reclamos\n3. Incrementos inusuales en ciertos tipos de reclamo\n4. Clientes con múltiples reclamos recurrentes\n\n**Responde únicamente en JSON**, siguiendo exactamente este formato, como **un array de objetos**, donde cada objeto contiene un campo `ai_analysis` con la información solicitada:\n\n```json\n[\n  {\n    \"ai_analysis\": {\n      \"anomalias_detectadas\": \"Describe en una frase o párrafo las anomalías detectadas de manera profesional\",\n      \"patrones_identificados\": \"Describe en texto los patrones observados y su posible relevancia\",\n      \"recomendaciones\": \"Proporciona recomendaciones accionables basadas en los hallazgos\",\n      \"nivel_alerta\": \"bajo | medio | alto\"\n    }\n  }\n]\n```\n\n**Notas importantes:**\n\n* No agregues campos adicionales, comentarios ni texto fuera del JSON.\n* Sé preciso, objetivo y profesional en tu redacción.\n* Si la información disponible es insuficiente para detectar anomalías o patrones, indícalo de forma clara en los campos correspondientes, manteniendo el formato JSON.\n* Asegúrate de que la salida sea un **array de objetos**, no un string dentro de un campo como `unified`.",
+        "hasOutputParser": true,
+        "options": {}
+      },
+      "id": "aba4c8e0-cb9e-434d-b8e6-61b31df8850e",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.7,
+      "position": [
+        -448,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO crm_analisis_resultados \n(anomalias, patrones, recomendaciones, nivel_alerta, processed_at)\nVALUES \n(\n  '{{ $json.output[0].ai_analysis.anomalias_detectadas.replace(/'/g, \"''\") }}',\n  '{{ $json.output[0].ai_analysis.patrones_identificados.replace(/'/g, \"''\") }}',\n  '{{ $json.output[0].ai_analysis.recomendaciones.replace(/'/g, \"''\") }}',\n  '{{ $json.output[0].ai_analysis.nivel_alerta.replace(/'/g, \"''\") }}',\n  '{{ $now }}'\n)\nRETURNING *;\n",
+        "options": {}
+      },
+      "id": "fe328a9d-337f-459d-9a10-e9e5000cb7b8",
+      "name": "Execute a SQL query",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        -80,
+        752
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "gyXDt2PS3zJ6Ccuo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n  id,\n  cliente_id,\n  nombre_cliente,\n  tipo_reclamo,\n  descripcion,\n  fecha_reclamo,\n  estado,\n  ciudad,\n  coordenadas_lat,\n  coordenadas_lon,\n  consumo_m3,\n  created_at\nFROM crm_reclamos\nWHERE fecha_reclamo >= CURRENT_DATE - INTERVAL '1 day'\n  AND estado IN ('pendiente', 'en_proceso')\nORDER BY fecha_reclamo DESC\nLIMIT 1000;",
+        "options": {}
+      },
+      "id": "97e4d5d6-bc9c-45ee-a63d-59d4e1914b79",
+      "name": "Fetch CRM Data",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.4,
+      "position": [
+        -1120,
+        768
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "gyXDt2PS3zJ6Ccuo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 24
+            }
+          ]
+        }
+      },
+      "id": "7d68b74f-374f-43de-92f7-a02171eb6c15",
+      "name": "Schedule Trigger",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1344,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "id": "has-cliente-id",
+              "leftValue": "={{ $('Fetch CRM Data').item.json }}",
+              "rightValue": true,
+              "operator": {
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9d472e24-c5c0-48f6-b382-3b57a61a8b5d",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        -912,
+        768
+      ]
+    },
+    {
+      "parameters": {
+        "html": "<!DOCTYPE html>\n<html>\n  <body style=\"font-family: Arial, Helvetica, sans-serif; background-color:#f4f8fb; padding: 20px; color:#003049;\">\n\n    <div style=\"max-width: 800px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #dce6ee;\">\n\n      <h2 style=\"color:#005f99; margin-bottom: 10px; font-weight: 600;\">\n        Reporte de Reclamos - CRM\n      </h2>\n\n      <p style=\"font-size: 15px; color:#003049; line-height: 1.5;\">\n        Se han procesado los siguientes reclamos reportados por clientes.  \n        Este informe ha sido generado automáticamente por el sistema CRM con análisis de IA.\n      </p>\n\n      <div style=\"margin-top: 25px;\">\n        {{\n          $input.all().map(i => i.json).map(item => `\n            <div style=\"\n              border-left: 4px solid ${\n                item.prioridad === 'alta' ? '#dc3545' :\n                item.prioridad === 'media' ? '#fd7e14' : '#4bb3fd'\n              };\n              padding: 15px;\n              margin-bottom: 20px;\n              background: #f0f7fc;\n              border-radius: 6px;\n            \">\n\n              <strong style=\"font-size: 16px; color:#003049;\">\n                Reclamo ID: ${item.id}\n              </strong>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#003049;\">\n                <strong>Nivel de Alerta:</strong> ${item.nivel_alerta.toUpperCase()}\n              </p>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Anomalías Detectadas:</strong>\n                <p style=\"margin: 5px 0; font-size: 13px;\">${item.anomalias}</p>\n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Patrones Identificados:</strong>\n                <p style=\"margin: 5px 0; font-size: 13px;\">${item.patrones}</p>\n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#005f99;\">Recomendaciones:</strong>\n                <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">${item.recomendaciones}</p>\n              </div>\n\n              <p style=\"margin-top: 12px; font-size: 12px; color:#6c7a86;\">\n                Procesado el: ${new Date(item.processed_at).toLocaleString()}\n              </p>\n\n            </div>\n          `).join(\"\")\n        }}\n      </div>\n\n      <p style=\"margin-top: 30px; font-size: 13px; color:#6c7a86; text-align: center;\">\n        Este es un reporte automático generado por el sistema CRM con análisis de IA.\n      </p>\n\n    </div>\n  </body>\n</html>\n"
+      },
+      "id": "48541223-8b90-403a-8461-ca4167cddf90",
+      "name": "Generate HTML Report",
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1,
+      "position": [
+        400,
+        736
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst processedItems = [];\n\nfunction simpleHash(str) {\n  let hash = 0;\n  for (let i = 0; i < str.length; i++) {\n    const char = str.charCodeAt(i);\n    hash = ((hash << 5) - hash) + char;\n    hash = hash & hash;\n  }\n  return Math.abs(hash).toString(16);\n}\n\nfor (const item of items) {\n  const data = item.json;\n\n  const hasRequiredFields = data.cliente_id &&\n                            data.tipo_reclamo &&\n                            data.fecha_reclamo;\n\n  if (!hasRequiredFields) {\n    processedItems.push({\n      ...data,\n      validation_status: 'error',\n      validation_message: 'Campos requeridos faltantes',\n      processed_at: new Date().toISOString()\n    });\n    continue;\n  }\n\n  let prioridad = 'media';\n  const tipoLower = data.tipo_reclamo.toLowerCase();\n\n  if (tipoLower.includes('fuga') || tipoLower.includes('corte')) {\n    prioridad = 'alta';\n  } else if (tipoLower.includes('calidad') || tipoLower.includes('presión')) {\n    prioridad = 'alta';\n  } else if (tipoLower.includes('factura')) {\n    prioridad = 'media';\n  } else {\n    prioridad = 'baja';\n  }\n\n  processedItems.push({\n    ...data,\n    prioridad,\n    validation_status: 'success',\n    processed_at: new Date().toISOString(),\n    data_hash: simpleHash(JSON.stringify({\n      cliente_id: data.cliente_id,\n      fecha_reclamo: data.fecha_reclamo,\n      tipo_reclamo: data.tipo_reclamo\n    }))\n  });\n}\n\nfunction formatJSON(arr) {\n  return JSON.stringify(arr, null, 2);\n}\n\nconst unified = formatJSON(processedItems);\n\nreturn [\n  { json: { unified } }\n];\n"
+      },
+      "id": "9b5eaf40-88e0-4944-9719-ba2db718bf36",
+      "name": "Format Data for AI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -672,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "=santiago.amaya-z@mail.escuelaing.edu.co",
+        "toEmail": "=laura.perilla-q@mail.escuelaing.edu.co, ricardo.ayala-g@mail.escuelaing.edu.co, santiago.botero-g@mail.escuelaing.edu.co, andres.calderon-r@mail.escuelaing.edu.co, santiago.amaya-z@mail.escuelaing.edu.co",
+        "subject": "=Reporte Diario CRM - {{ $json.report_timestamp }}",
+        "html": "={{ $json.html }}",
+        "options": {}
+      },
+      "id": "f44f3821-429f-4426-b0ca-199bf4e0ea05",
+      "name": "Send email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        624,
+        736
+      ],
+      "webhookId": "0a21816a-c459-4e24-8da2-44c0b768f1a8",
+      "credentials": {
+        "smtp": {
+          "id": "bJprEK5yBNisfuTh",
+          "name": "SMTP account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "schemaType": "manual",
+        "inputSchema": "{\n  \"$schema\": \"https://json-schema.org/draft/2020-12/schema\",\n  \"title\": \"Análisis de Reclamos CRM\",\n  \"description\": \"Esquema para el resultado del análisis de reclamos, incluyendo anomalías, patrones y recomendaciones.\",\n  \"type\": \"array\",\n  \"items\": {\n    \"type\": \"object\",\n    \"properties\": {\n      \"ai_analysis\": {\n        \"type\": \"object\",\n        \"description\": \"Resultado del análisis realizado por el modelo sobre los reclamos CRM\",\n        \"properties\": {\n          \"anomalias_detectadas\": {\n            \"type\": \"string\",\n            \"description\": \"Descripción de las anomalías detectadas en los reclamos\"\n          },\n          \"patrones_identificados\": {\n            \"type\": \"string\",\n            \"description\": \"Patrones observados en los datos de reclamos, geográficos, temporales o por tipo\"\n          },\n          \"recomendaciones\": {\n            \"type\": \"string\",\n            \"description\": \"Recomendaciones accionables basadas en los hallazgos\"\n          },\n          \"nivel_alerta\": {\n            \"type\": \"string\",\n            \"description\": \"Nivel de alerta asignado según la criticidad de los hallazgos\",\n            \"enum\": [\"bajo\", \"medio\", \"alto\"]\n          }\n        },\n        \"required\": [\n          \"anomalias_detectadas\",\n          \"patrones_identificados\",\n          \"recomendaciones\",\n          \"nivel_alerta\"\n        ],\n        \"additionalProperties\": false\n      }\n    },\n    \"required\": [\"ai_analysis\"],\n    \"additionalProperties\": false\n  }\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -304,
+        960
+      ],
+      "id": "61b3e240-b7ad-4fcc-bd12-1310ae09f4b1",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "21037a47-b766-4cb9-85de-ac62b934c579",
+              "leftValue": "={{ $json.nivel_alerta }}",
+              "rightValue": "bajo",
+              "operator": {
+                "type": "string",
+                "operation": "notEquals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        128,
+        752
+      ],
+      "id": "36cbbb94-3a54-457d-a201-dbd44cb7f622",
+      "name": "If Alert Level Is Not Low"
+    }
+  ],
+  "pinData": {
+    "Fetch CRM Data": [
+      {
+        "json": {
+          "id": 5,
+          "cliente_id": "CLI001",
+          "nombre_cliente": "Juan Pérez",
+          "tipo_reclamo": "Corte de servicio",
+          "descripcion": "Sin agua desde hace 6 horas",
+          "fecha_reclamo": "2025-11-28T00:44:48.120Z",
+          "estado": "pendiente",
+          "ciudad": "Bogotá",
+          "coordenadas_lat": "4.60970000",
+          "coordenadas_lon": "-74.08170000",
+          "consumo_m3": "15.50",
+          "created_at": "2025-11-28T01:14:48.120Z"
+        }
+      },
+      {
+        "json": {
+          "id": 3,
+          "cliente_id": "CLI003",
+          "nombre_cliente": "Carlos Rodríguez",
+          "tipo_reclamo": "Calidad del agua",
+          "descripcion": "Agua con color y olor extraño",
+          "fecha_reclamo": "2025-11-28T00:14:48.120Z",
+          "estado": "en_proceso",
+          "ciudad": "Cali",
+          "coordenadas_lat": "3.45160000",
+          "coordenadas_lon": "-76.53200000",
+          "consumo_m3": "12.00",
+          "created_at": "2025-11-28T01:14:48.120Z"
+        }
+      }
+    ],
+    "Generate HTML Report": [
+      {
+        "json": {
+          "html": "<!DOCTYPE html>\n<html>\n  <body style=\"font-family: Arial, Helvetica, sans-serif; background-color:#f4f8fb; padding: 20px; color:#003049;\">\n\n    <div style=\"max-width: 800px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #dce6ee;\">\n\n      <h2 style=\"color:#005f99; margin-bottom: 10px; font-weight: 600;\">\n        Reporte de Reclamos - CRM\n      </h2>\n\n      <p style=\"font-size: 15px; color:#003049; line-height: 1.5;\">\n        Se han procesado los siguientes reclamos reportados por clientes.  \n        Este informe ha sido generado automáticamente por el sistema CRM con análisis de IA.\n      </p>\n\n      <div style=\"margin-top: 25px;\">\n        \n            <div style=\"\n              border-left: 4px solid #dc3545;\n              padding: 15px;\n              margin-bottom: 20px;\n              background: #f0f7fc;\n              border-radius: 6px;\n            \">\n\n              <strong style=\"font-size: 16px; color:#003049;\">\n                Reclamo ID: 41 &nbsp; | &nbsp; Cliente: CLI001\n              </strong>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#003049;\">\n                <strong>Tipo de Reclamo:</strong> Corte de servicio\n              </p>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#dc3545;\">\n                <strong>Prioridad:</strong> ALTA\n              </p>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#28a745;\">\n                <strong>Nivel de Alerta:</strong> BAJO\n              </p>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Anomalías Detectadas:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px;\">• No se pueden detectar anomalías con un único registro de reclamo. Se necesita un conjunto de datos más amplio para identificar duplicados, patrones geográficos, incrementos inusuales o clientes recurrentes.</p>\n                \n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Patrones Identificados:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px;\">• No se pueden identificar patrones con un único registro de reclamo. Se necesita un conjunto de datos más amplio que incluya múltiples reclamos para detectar tendencias.</p>\n                \n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#005f99;\">Recomendaciones:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Proveer un conjunto de datos más grande de reclamos del CRM para permitir un análisis significativo.</p>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Incluir datos históricos para identificar tendencias y aumentos inusuales.</p>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Asegurar que los datos contengan múltiples registros de clientes y ubicaciones para la detección de patrones geográficos y clientes recurrentes.</p>\n                \n              </div>\n\n            </div>\n          \n            <div style=\"\n              border-left: 4px solid #dc3545;\n              padding: 15px;\n              margin-bottom: 20px;\n              background: #f0f7fc;\n              border-radius: 6px;\n            \">\n\n              <strong style=\"font-size: 16px; color:#003049;\">\n                Reclamo ID: 42 &nbsp; | &nbsp; Cliente: CLI003\n              </strong>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#003049;\">\n                <strong>Tipo de Reclamo:</strong> Calidad del agua\n              </p>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#dc3545;\">\n                <strong>Prioridad:</strong> ALTA\n              </p>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#28a745;\">\n                <strong>Nivel de Alerta:</strong> BAJO\n              </p>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Anomalías Detectadas:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px;\">• No se pueden detectar anomalías con un único registro de reclamo. Se necesita un conjunto de datos más amplio para identificar duplicados, patrones geográficos, incrementos inusuales o clientes recurrentes.</p>\n                \n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Patrones Identificados:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px;\">• No se pueden identificar patrones con un único registro de reclamo. Se necesita un conjunto de datos más amplio que incluya múltiples reclamos para detectar tendencias.</p>\n                \n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#005f99;\">Recomendaciones:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Proveer un conjunto de datos más grande de reclamos del CRM para permitir un análisis significativo.</p>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Incluir datos históricos para identificar tendencias y aumentos inusuales.</p>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Asegurar que los datos contengan múltiples registros de clientes y ubicaciones para la detección de patrones geográficos y clientes recurrentes.</p>\n                \n              </div>\n\n            </div>\n          \n      </div>\n\n      <p style=\"margin-top: 30px; font-size: 13px; color:#6c7a86; text-align: center;\">\n        Este es un reporte automático generado por el sistema CRM con análisis de IA.\n      </p>\n\n    </div>\n  </body>\n</html>\n"
+        }
+      },
+      {
+        "json": {
+          "html": "<!DOCTYPE html>\n<html>\n  <body style=\"font-family: Arial, Helvetica, sans-serif; background-color:#f4f8fb; padding: 20px; color:#003049;\">\n\n    <div style=\"max-width: 800px; margin: auto; background: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #dce6ee;\">\n\n      <h2 style=\"color:#005f99; margin-bottom: 10px; font-weight: 600;\">\n        Reporte de Reclamos - CRM\n      </h2>\n\n      <p style=\"font-size: 15px; color:#003049; line-height: 1.5;\">\n        Se han procesado los siguientes reclamos reportados por clientes.  \n        Este informe ha sido generado automáticamente por el sistema CRM con análisis de IA.\n      </p>\n\n      <div style=\"margin-top: 25px;\">\n        \n            <div style=\"\n              border-left: 4px solid #dc3545;\n              padding: 15px;\n              margin-bottom: 20px;\n              background: #f0f7fc;\n              border-radius: 6px;\n            \">\n\n              <strong style=\"font-size: 16px; color:#003049;\">\n                Reclamo ID: 41 &nbsp; | &nbsp; Cliente: CLI001\n              </strong>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#003049;\">\n                <strong>Tipo de Reclamo:</strong> Corte de servicio\n              </p>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#dc3545;\">\n                <strong>Prioridad:</strong> ALTA\n              </p>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#28a745;\">\n                <strong>Nivel de Alerta:</strong> BAJO\n              </p>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Anomalías Detectadas:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px;\">• No se pueden detectar anomalías con un único registro de reclamo. Se necesita un conjunto de datos más amplio para identificar duplicados, patrones geográficos, incrementos inusuales o clientes recurrentes.</p>\n                \n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Patrones Identificados:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px;\">• No se pueden identificar patrones con un único registro de reclamo. Se necesita un conjunto de datos más amplio que incluya múltiples reclamos para detectar tendencias.</p>\n                \n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#005f99;\">Recomendaciones:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Proveer un conjunto de datos más grande de reclamos del CRM para permitir un análisis significativo.</p>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Incluir datos históricos para identificar tendencias y aumentos inusuales.</p>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Asegurar que los datos contengan múltiples registros de clientes y ubicaciones para la detección de patrones geográficos y clientes recurrentes.</p>\n                \n              </div>\n\n            </div>\n          \n            <div style=\"\n              border-left: 4px solid #dc3545;\n              padding: 15px;\n              margin-bottom: 20px;\n              background: #f0f7fc;\n              border-radius: 6px;\n            \">\n\n              <strong style=\"font-size: 16px; color:#003049;\">\n                Reclamo ID: 42 &nbsp; | &nbsp; Cliente: CLI003\n              </strong>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#003049;\">\n                <strong>Tipo de Reclamo:</strong> Calidad del agua\n              </p>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#dc3545;\">\n                <strong>Prioridad:</strong> ALTA\n              </p>\n\n              <p style=\"margin: 8px 0; font-size: 14px; color:#28a745;\">\n                <strong>Nivel de Alerta:</strong> BAJO\n              </p>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Anomalías Detectadas:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px;\">• No se pueden detectar anomalías con un único registro de reclamo. Se necesita un conjunto de datos más amplio para identificar duplicados, patrones geográficos, incrementos inusuales o clientes recurrentes.</p>\n                \n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#003049;\">Patrones Identificados:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px;\">• No se pueden identificar patrones con un único registro de reclamo. Se necesita un conjunto de datos más amplio que incluya múltiples reclamos para detectar tendencias.</p>\n                \n              </div>\n\n              <div style=\"margin-top: 12px;\">\n                <strong style=\"font-size: 14px; color:#005f99;\">Recomendaciones:</strong>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Proveer un conjunto de datos más grande de reclamos del CRM para permitir un análisis significativo.</p>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Incluir datos históricos para identificar tendencias y aumentos inusuales.</p>\n                \n                  <p style=\"margin: 5px 0; font-size: 13px; color:#005f99;\">• Asegurar que los datos contengan múltiples registros de clientes y ubicaciones para la detección de patrones geográficos y clientes recurrentes.</p>\n                \n              </div>\n\n            </div>\n          \n      </div>\n\n      <p style=\"margin-top: 30px; font-size: 13px; color:#6c7a86; text-align: center;\">\n        Este es un reporte automático generado por el sistema CRM con análisis de IA.\n      </p>\n\n    </div>\n  </body>\n</html>\n"
+        }
+      }
+    ],
+    "Format Data for AI": [
+      {
+        "json": {
+          "unified": "[\n  {\n    \"id\": 5,\n    \"cliente_id\": \"CLI001\",\n    \"nombre_cliente\": \"Juan Pérez\",\n    \"tipo_reclamo\": \"Corte de servicio\",\n    \"descripcion\": \"Sin agua desde hace 6 horas\",\n    \"fecha_reclamo\": \"2025-11-28T00:44:48.120Z\",\n    \"estado\": \"pendiente\",\n    \"ciudad\": \"Bogotá\",\n    \"coordenadas_lat\": \"4.60970000\",\n    \"coordenadas_lon\": \"-74.08170000\",\n    \"consumo_m3\": \"15.50\",\n    \"created_at\": \"2025-11-28T01:14:48.120Z\",\n    \"prioridad\": \"alta\",\n    \"validation_status\": \"success\",\n    \"processed_at\": \"2025-11-29T17:46:37.065Z\",\n    \"data_hash\": \"56182dc0\"\n  },\n  {\n    \"id\": 3,\n    \"cliente_id\": \"CLI003\",\n    \"nombre_cliente\": \"Carlos Rodríguez\",\n    \"tipo_reclamo\": \"Calidad del agua\",\n    \"descripcion\": \"Agua con color y olor extraño\",\n    \"fecha_reclamo\": \"2025-11-28T00:14:48.120Z\",\n    \"estado\": \"en_proceso\",\n    \"ciudad\": \"Cali\",\n    \"coordenadas_lat\": \"3.45160000\",\n    \"coordenadas_lon\": \"-76.53200000\",\n    \"consumo_m3\": \"12.00\",\n    \"created_at\": \"2025-11-28T01:14:48.120Z\",\n    \"prioridad\": \"alta\",\n    \"validation_status\": \"success\",\n    \"processed_at\": \"2025-11-29T17:46:37.065Z\",\n    \"data_hash\": \"6abed55e\"\n  }\n]"
+        }
+      }
+    ],
+    "AI Agent": [
+      {
+        "json": {
+          "output": [
+            {
+              "ai_analysis": {
+                "anomalias_detectadas": "La información proporcionada es insuficiente (solo dos reclamos distintos) para detectar anomalías significativas como reclamos duplicados, incrementos inusuales en tipos de reclamos o clientes con múltiples incidentes recurrentes. Ambas incidencias, aunque distintas en tipo y ubicación, comparten una prioridad 'alta'.",
+                "patrones_identificados": "Se observa que ambos reclamos fueron registrados el mismo día (28 de noviembre de 2025) y ambos se clasificaron con prioridad 'alta'. No se identifican patrones geográficos claros ya que los reclamos provienen de ciudades distintas (Bogotá y Cali) y son de tipos diferentes. Con solo dos registros, no es posible establecer tendencias temporales o de tipo de reclamo.",
+                "recomendaciones": "Para un análisis efectivo y la detección de patrones o anomalías, se recomienda encarecidamente aumentar el volumen de datos de reclamos. Es crucial disponer de un historial más amplio para identificar tendencias geográficas, estacionales, tipos de reclamos en crecimiento o clientes con un historial de reclamos repetitivos. Se sugiere implementar una categorización más granular de los reclamos y monitorear las métricas de resolución para una gestión proactiva.",
+                "nivel_alerta": "bajo"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "Execute a SQL query": [
+      {
+        "json": {
+          "id": 1,
+          "anomalias": "La información proporcionada es insuficiente (solo dos reclamos distintos) para detectar anomalías significativas como reclamos duplicados, incrementos inusuales en tipos de reclamos o clientes con múltiples incidentes recurrentes. Ambas incidencias, aunque distintas en tipo y ubicación, comparten una prioridad 'alta'.",
+          "patrones": "Se observa que ambos reclamos fueron registrados el mismo día (28 de noviembre de 2025) y ambos se clasificaron con prioridad 'alta'. No se identifican patrones geográficos claros ya que los reclamos provienen de ciudades distintas (Bogotá y Cali) y son de tipos diferentes. Con solo dos registros, no es posible establecer tendencias temporales o de tipo de reclamo.",
+          "recomendaciones": "Para un análisis efectivo y la detección de patrones o anomalías, se recomienda encarecidamente aumentar el volumen de datos de reclamos. Es crucial disponer de un historial más amplio para identificar tendencias geográficas, estacionales, tipos de reclamos en crecimiento o clientes con un historial de reclamos repetitivos. Se sugiere implementar una categorización más granular de los reclamos y monitorear las métricas de resolución para una gestión proactiva.",
+          "nivel_alerta": "bajo",
+          "processed_at": "2025-11-29T13:06:07.940Z"
+        }
+      }
+    ]
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "shared": [
+    {
+      "updatedAt": "2025-11-27T20:55:09.400Z",
+      "createdAt": "2025-11-27T20:55:09.400Z",
+      "role": "workflow:owner",
+      "workflowId": "U7TOVBPrWYVgks6Z",
+      "projectId": "xno20arzPonor2IK"
+    }
+  ],
+  "staticData": null,
+  "tags": [
+    {
+      "updatedAt": "2025-11-27T20:55:21.471Z",
+      "createdAt": "2025-11-27T20:55:21.471Z",
+      "id": "xJr6SPZKss4pCHM4",
+      "name": "CRM"
+    }
+  ],
+  "triggerCount": 0,
+  "updatedAt": "2025-11-29T18:08:29.000Z",
+  "versionId": "a477dfb0-21dc-497d-8bce-063d962dc359"
+}
