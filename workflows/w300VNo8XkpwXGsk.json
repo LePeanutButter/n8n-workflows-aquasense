@@ -181,8 +181,8 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1,
       "position": [
-        224,
-        -256
+        304,
+        -224
       ],
       "id": "7b7836bf-1ba3-4975-aee5-14cc3c8db1db",
       "name": "Google Gemini Chat Model",
@@ -212,17 +212,18 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "WITH\n-- 1️⃣ TAG VALUES DEL DÍA\nvalues_today AS (\n    SELECT \n        tv.tag_id,\n        tv.timestamp,\n        tv.value,\n        LAG(tv.value) OVER (PARTITION BY tv.tag_id ORDER BY tv.timestamp) AS prev_value\n    FROM TagValues tv\n    WHERE tv.timestamp >= CURRENT_DATE\n),\n\n-- 2️⃣ RESUMEN POR TAG (mínimo, máximo, promedio, variación máxima)\ntag_stats AS (\n    SELECT\n        t.device_id,\n        t.tag_id,\n        t.tag_name,\n        MIN(v.value) AS min_value_day,\n        MAX(v.value) AS max_value_day,\n        AVG(v.value) AS avg_value_day,\n        MAX(ABS(v.value - v.prev_value)) AS max_variation\n    FROM values_today v\n    JOIN Tags t ON v.tag_id = t.tag_id\n    GROUP BY t.device_id, t.tag_id, t.tag_name\n),\n\n-- 3️⃣ VALORES FUERA DE RANGO\nout_of_range AS (\n    SELECT \n        v.tag_id,\n        COUNT(*) AS out_of_range_count\n    FROM values_today v\n    JOIN Tags t ON v.tag_id = t.tag_id\n    WHERE (v.value < t.min_value OR v.value > t.max_value)\n    GROUP BY v.tag_id\n),\n\n-- 4️⃣ ALARMAS DEL DÍA\nalarms_today AS (\n    SELECT \n        t.tag_id,\n        COUNT(*) AS alarm_count\n    FROM Alarms a\n    JOIN Tags t ON a.tag_id = t.tag_id\n    WHERE a.timestamp >= CURRENT_DATE\n    GROUP BY t.tag_id\n)\n\n-- 5️⃣ SALIDA FINAL: RESUMEN POR DISPOSITIVO Y TAG\nSELECT \n    d.device_id,\n    d.device_name,\n    ts.tag_id,\n    ts.tag_name,\n    ts.min_value_day,\n    ts.max_value_day,\n    ts.avg_value_day,\n    ts.max_variation,\n    COALESCE(o.out_of_range_count, 0) AS out_of_range_count,\n    COALESCE(a.alarm_count, 0) AS alarm_count\nFROM tag_stats ts\nJOIN Devices d ON ts.device_id = d.device_id\nLEFT JOIN out_of_range o ON ts.tag_id = o.tag_id\nLEFT JOIN alarms_today a ON ts.tag_id = a.tag_id\nORDER BY d.device_id, ts.tag_name;\n",
+        "query": "WITH\nvalues_today AS (\n    SELECT \n        tv.tag_id,\n        tv.timestamp,\n        tv.value,\n        LAG(tv.value) OVER (PARTITION BY tv.tag_id ORDER BY tv.timestamp) AS prev_value\n    FROM TagValues tv\n    WHERE tv.timestamp >= CURRENT_DATE\n),\n\ntag_stats AS (\n    SELECT\n        t.device_id,\n        t.tag_id,\n        t.tag_name,\n        MIN(v.value) AS min_value_day,\n        MAX(v.value) AS max_value_day,\n        AVG(v.value) AS avg_value_day,\n        MAX(ABS(v.value - v.prev_value)) AS max_variation\n    FROM values_today v\n    JOIN Tags t ON v.tag_id = t.tag_id\n    GROUP BY t.device_id, t.tag_id, t.tag_name\n),\n\nout_of_range AS (\n    SELECT \n        v.tag_id,\n        COUNT(*) AS out_of_range_count\n    FROM values_today v\n    JOIN Tags t ON v.tag_id = t.tag_id\n    WHERE (v.value < t.min_value OR v.value > t.max_value)\n    GROUP BY v.tag_id\n),\n\nalarms_today AS (\n    SELECT \n        t.tag_id,\n        COUNT(*) AS alarm_count\n    FROM Alarms a\n    JOIN Tags t ON a.tag_id = t.tag_id\n    WHERE a.timestamp >= CURRENT_DATE\n    GROUP BY t.tag_id\n)\n\nSELECT \n    d.device_id,\n    d.device_name,\n    ts.tag_id,\n    ts.tag_name,\n    ts.min_value_day,\n    ts.max_value_day,\n    ts.avg_value_day,\n    ts.max_variation,\n    COALESCE(o.out_of_range_count, 0) AS out_of_range_count,\n    COALESCE(a.alarm_count, 0) AS alarm_count\nFROM tag_stats ts\nJOIN Devices d ON ts.device_id = d.device_id\nLEFT JOIN out_of_range o ON ts.tag_id = o.tag_id\nLEFT JOIN alarms_today a ON ts.tag_id = a.tag_id\nORDER BY d.device_id, ts.tag_name;\n",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.6,
       "position": [
         -336,
-        -416
+        -400
       ],
       "id": "b5977f22-9f1d-4811-b60f-733ddfa219c8",
       "name": "Fetch SCADA Data",
+      "alwaysOutputData": true,
       "credentials": {
         "postgres": {
           "id": "gyXDt2PS3zJ6Ccuo",
@@ -238,8 +239,8 @@
       "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
       "typeVersion": 1.3,
       "position": [
-        464,
-        -240
+        448,
+        -224
       ],
       "id": "35ca90af-42f3-405b-9995-bd0c2d2473cf",
       "name": "Structured Output Parser"
@@ -256,7 +257,7 @@
       "typeVersion": 1.2,
       "position": [
         -544,
-        -416
+        -400
       ],
       "id": "fce25b71-80dc-497e-b308-2ca5a3ad0951",
       "name": "Schedule Trigger"
@@ -442,11 +443,12 @@
           "conditions": [
             {
               "id": "5493e406-d608-49ba-ae3c-cb35c845cd34",
-              "leftValue": "={{ !(Object.keys($json).length === 1 && $json.success === true) }}",
+              "leftValue": "={{ $('Fetch SCADA Data').item.json }}",
               "rightValue": true,
               "operator": {
-                "type": "boolean",
-                "operation": "equals"
+                "type": "object",
+                "operation": "notEmpty",
+                "singleValue": true
               }
             }
           ],
@@ -458,7 +460,7 @@
       "typeVersion": 2.2,
       "position": [
         -96,
-        -416
+        -400
       ],
       "id": "d4c6e179-a7f2-4e87-8643-f510e81b0396",
       "name": "If"
@@ -835,6 +837,6 @@
   "staticData": null,
   "tags": [],
   "triggerCount": 0,
-  "updatedAt": "2025-11-25T05:17:26.000Z",
-  "versionId": "7ac23c6c-3cd4-490f-a385-3f5fcf54608e"
+  "updatedAt": "2025-11-29T16:19:08.000Z",
+  "versionId": "226c16bd-c82c-43c3-9685-cf7184b653a3"
 }
