@@ -184,7 +184,7 @@
       "typeVersion": 1,
       "position": [
         304,
-        -224
+        -288
       ],
       "id": "7b7836bf-1ba3-4975-aee5-14cc3c8db1db",
       "name": "Google Gemini Chat Model",
@@ -206,7 +206,7 @@
       "typeVersion": 3,
       "position": [
         304,
-        -416
+        -480
       ],
       "id": "9438ab63-81df-48b5-bc80-6f241b4c128b",
       "name": "AI Agent"
@@ -221,7 +221,7 @@
       "typeVersion": 2.6,
       "position": [
         -336,
-        -400
+        -464
       ],
       "id": "b5977f22-9f1d-4811-b60f-733ddfa219c8",
       "name": "Fetch SCADA Data",
@@ -242,7 +242,7 @@
       "typeVersion": 1.3,
       "position": [
         448,
-        -224
+        -288
       ],
       "id": "35ca90af-42f3-405b-9995-bd0c2d2473cf",
       "name": "Structured Output Parser"
@@ -259,7 +259,7 @@
       "typeVersion": 1.2,
       "position": [
         -544,
-        -400
+        -464
       ],
       "id": "fce25b71-80dc-497e-b308-2ca5a3ad0951",
       "name": "Schedule Trigger"
@@ -272,7 +272,7 @@
       "typeVersion": 2,
       "position": [
         112,
-        -416
+        -480
       ],
       "id": "78e9b903-d65a-4c13-825e-26938364e94f",
       "name": "Code in JavaScript"
@@ -285,7 +285,7 @@
       "typeVersion": 2,
       "position": [
         912,
-        -416
+        -480
       ],
       "id": "104ddacf-2423-4f90-864f-862c75aaa68a",
       "name": "Code in JavaScript1"
@@ -371,7 +371,7 @@
       "typeVersion": 2.6,
       "position": [
         768,
-        -416
+        -480
       ],
       "id": "d51ac115-a8dd-4c4f-932b-2c87f87add8a",
       "name": "Insert rows in a table",
@@ -391,7 +391,7 @@
       "typeVersion": 1,
       "position": [
         592,
-        -416
+        -480
       ],
       "id": "2292636f-07c6-49c9-bfb3-9153338b663a",
       "name": "Split Out"
@@ -404,7 +404,7 @@
       "typeVersion": 1.2,
       "position": [
         1568,
-        -432
+        -496
       ],
       "id": "1110ebae-aeef-4e60-ade7-c003b94e4f15",
       "name": "HTML"
@@ -421,7 +421,7 @@
       "typeVersion": 2.1,
       "position": [
         1792,
-        -432
+        -496
       ],
       "id": "107d128e-2ab2-4b3f-bb6b-ff64e55475a9",
       "name": "Send email",
@@ -462,7 +462,7 @@
       "typeVersion": 2.2,
       "position": [
         -96,
-        -400
+        -464
       ],
       "id": "d4c6e179-a7f2-4e87-8643-f510e81b0396",
       "name": "If"
@@ -495,7 +495,7 @@
       "typeVersion": 2.2,
       "position": [
         1072,
-        -416
+        -480
       ],
       "id": "ab5de91c-3f50-41b8-849c-4cb853bd98c2",
       "name": "If1"
@@ -509,7 +509,7 @@
       "typeVersion": 1,
       "position": [
         1360,
-        -432
+        -496
       ],
       "id": "8c936118-6ba5-4c9c-a581-9031304edf84",
       "name": "Aggregate"
@@ -523,7 +523,7 @@
       "typeVersion": 1,
       "position": [
         1520,
-        -224
+        -288
       ],
       "id": "6683d6ae-d7a1-4ed3-8db2-8f0e72da87dc",
       "name": "Get a dashboard",
@@ -549,7 +549,7 @@
       "typeVersion": 4.3,
       "position": [
         1728,
-        -224
+        -288
       ],
       "id": "bac0eab6-4445-4c52-afb7-24796438015a",
       "name": "HTTP Request",
@@ -837,8 +837,15 @@
     }
   ],
   "staticData": null,
-  "tags": [],
+  "tags": [
+    {
+      "updatedAt": "2025-12-06T23:02:35.568Z",
+      "createdAt": "2025-12-06T23:02:35.568Z",
+      "id": "S3087lgPcaOEorMk",
+      "name": "SCADA"
+    }
+  ],
   "triggerCount": 0,
-  "updatedAt": "2025-12-04T22:55:37.000Z",
-  "versionId": "fa355179-e403-452f-9318-b9801d09bd8b"
+  "updatedAt": "2025-12-06T23:02:36.000Z",
+  "versionId": "1fecdcb3-40f5-4a21-aca0-75af2384183a"
 }
