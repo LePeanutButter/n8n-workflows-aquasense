@@ -624,7 +624,7 @@
               "id": "452efa28-2dc6-4ea3-a7a2-c35d100d0382",
               "name": "repo.name",
               "type": "string",
-              "value": "n8n-workflows-aqualia-global"
+              "value": "n8n-workflows-aquasense"
             },
             {
               "id": "81c4dc54-86bf-4432-a23f-22c7ea831e74",
@@ -698,7 +698,7 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "position": [
         1024,
-        272
+        288
       ],
       "typeVersion": 1
     },
@@ -745,8 +745,15 @@
     }
   ],
   "staticData": null,
-  "tags": [],
+  "tags": [
+    {
+      "updatedAt": "2025-12-06T23:03:02.485Z",
+      "createdAt": "2025-12-06T23:03:02.485Z",
+      "id": "XhlHyiNabErISAFU",
+      "name": "GitHub"
+    }
+  ],
   "triggerCount": 0,
-  "updatedAt": "2025-11-17T19:36:33.702Z",
-  "versionId": "cce68f92-2d88-4de8-922e-63824d6a901b"
+  "updatedAt": "2025-12-06T23:03:23.000Z",
+  "versionId": "3f8352d1-cd6f-4c2c-b03e-25ca4e5a67e9"
 }
