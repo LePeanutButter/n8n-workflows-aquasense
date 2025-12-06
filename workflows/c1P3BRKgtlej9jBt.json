@@ -84,7 +84,7 @@
       "name": "When clicking ‘Test workflow’",
       "type": "n8n-nodes-base.manualTrigger",
       "position": [
-        400,
+        416,
         16
       ],
       "typeVersion": 1
@@ -103,7 +103,7 @@
               "id": "452efa28-2dc6-4ea3-a7a2-c35d100d0382",
               "name": "repo.name",
               "type": "string",
-              "value": "n8n-workflows-aqualia-global"
+              "value": "n8n-workflows-aquasense"
             },
             {
               "id": "81c4dc54-86bf-4432-a23f-22c7ea831e74",
@@ -202,7 +202,7 @@
         },
         "repository": {
           "__rl": true,
-          "value": "n8n-workflows-aqualia-global",
+          "value": "={{ $('Globals').item.json.repo.name }}",
           "mode": "name"
         },
         "filePath": "={{ $('Get all files in given path').item.json.path }}",
@@ -275,8 +275,15 @@
     }
   ],
   "staticData": null,
-  "tags": [],
+  "tags": [
+    {
+      "updatedAt": "2025-12-06T23:03:02.485Z",
+      "createdAt": "2025-12-06T23:03:02.485Z",
+      "id": "XhlHyiNabErISAFU",
+      "name": "GitHub"
+    }
+  ],
   "triggerCount": 0,
-  "updatedAt": "2025-11-17T19:40:05.000Z",
-  "versionId": "6c49ae8e-7cb9-438b-9bf2-8c2a095d8e0e"
+  "updatedAt": "2025-12-06T23:03:44.000Z",
+  "versionId": "4e01bcd2-e5a4-4e12-abd3-5b9020af139f"
 }
