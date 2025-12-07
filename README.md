@@ -2,7 +2,7 @@
 
 [![standard-readme compliant](https://img.shields.io/badge/readme%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/RichardLitt/standard-readme)
 
-A version-controlled repository for managing backup copies of all n8n workflows created for the academic automation project **AquaSense - Intelligent Water Management**, developed as part of the course **Estrategia de Operaciones y Procesos (PRI2IS)** at **Escuela Colombiana de Ingeniería Julio Garavito**.
+A version-controlled repository for managing backup copies of all n8n workflows created for the academic automation project **AquaSense - Intelligent Water Management**, developed as part of the course **Operations and Process Strategy (PRI2IS)** at **Escuela Colombiana de Ingeniería Julio Garavito**.
 
 This repository ensures traceability, reproducibility, and structured evolution of the Low-Code automation artifacts used to simulate SCADA, ERP and CRM data consolidation through n8n, Supabase, Azure Free Tier, Grafana, and Gemini-based anomaly detection.
 
