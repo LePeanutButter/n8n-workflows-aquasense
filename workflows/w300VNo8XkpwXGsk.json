@@ -517,7 +517,7 @@
     {
       "parameters": {
         "operation": "get",
-        "dashboardUidOrUrl": "https://andrescalderonr.grafana.net/d/an6tqqn/centro-de-monitoreo-integral?orgId=1&from=2025-11-24T22:47:09.852Z&to=2025-11-25T04:47:09.852Z&timezone=browser&viewPanel=panel-1"
+        "dashboardUidOrUrl": "https://andrescalderonr.grafana.net/d/anzptgl/aquasense"
       },
       "type": "n8n-nodes-base.grafana",
       "typeVersion": 1,
@@ -846,6 +846,6 @@
     }
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-12-06T23:02:36.000Z",
-  "versionId": "1fecdcb3-40f5-4a21-aca0-75af2384183a"
+  "updatedAt": "2025-12-15T06:01:31.118Z",
+  "versionId": "3dae4b04-185d-43ec-be90-81110908d8f1"
 }
