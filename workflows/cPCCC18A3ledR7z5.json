@@ -493,7 +493,7 @@
     {
       "parameters": {
         "operation": "get",
-        "dashboardUidOrUrl": "https://andrescalderonr.grafana.net/d/anjbcsq/erm?orgId=1&from=2025-11-27T21:21:47.696Z&to=2025-11-28T03:21:47.696Z&timezone=browser"
+        "dashboardUidOrUrl": "https://andrescalderonr.grafana.net/d/anzptgl/aquasense"
       },
       "type": "n8n-nodes-base.grafana",
       "typeVersion": 1,
@@ -883,6 +883,6 @@
     }
   ],
   "triggerCount": 0,
-  "updatedAt": "2025-12-06T23:01:36.000Z",
-  "versionId": "4a9cf4b1-f483-4d94-8d35-309a34993754"
+  "updatedAt": "2025-12-15T06:02:09.681Z",
+  "versionId": "ea16139f-a81b-4930-87b0-ebf1b940190e"
 }
